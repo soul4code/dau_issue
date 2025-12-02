@@ -19,8 +19,9 @@ Fast DAU & 7‑Day Retention from a Large Events Table**
 1. Настроить окружение с python==3.7.17
 2. Установить poetry `pip install poetry`
 3. Установить зависимости `poetry install`
-4. Создать базу данных на сервере postrges и создать файл `.env` с настройками по подключению к БД в корне проекта по примеру `env.example`
-5. Запустить миграции `python manage.py migrate`
+4. Запустить `pre-commit install`
+5. Создать базу данных на сервере postrges и создать файл `.env` с настройками по подключению к БД в корне проекта по примеру `env.example`
+6. Запустить миграции `python manage.py migrate`
 
 **Генерация данных**
 
