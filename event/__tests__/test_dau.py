@@ -15,12 +15,22 @@ def test_dau_request(event_factory):
         user_id=1,
         performed_at=timezone.now() - relativedelta(days=1),
     )
+    _very_old_event = event_factory(
+        user_id=2,
+        performed_at=timezone.now() - relativedelta(years=1),
+    )
+    _before_yesterday_event = event_factory(
+        user_id=2,
+        performed_at=timezone.now() - relativedelta(days=2),
+    )
     dau = Event.objects.dau()
-    assert len(dau) == 2
+    assert len(dau) == 3
     assert dau[0]['users'] == 1
+    assert dau[0]['returned'] == 1
     assert dau[1]['users'] == 1
-    assert dau[0]['returned'] == 0
-    assert dau[1]['returned'] == 1
+    assert dau[1]['returned'] == 0
+    assert dau[2]['users'] == 1
+    assert dau[2]['returned'] == 1
 
 
 @pytest.mark.django_db
