@@ -19,10 +19,10 @@ class EventQuerySet(CTEQuerySet):
         end: Optional[datetime.datetime] = None,
     ):
         """
-            За диапазон дат возвращается 3 поля: day, users и returned.
-            В users лежит количество уникальных юзеров за день,
-            а в returned - сколько из них посещали сайт в любой из предыдущих дней
-            за всю историю.
+        За диапазон дат возвращается 3 поля: day, users и returned.
+        В users лежит количество уникальных юзеров за день,
+        а в returned - сколько из них посещали сайт в любой из предыдущих дней
+        за всю историю.
         """
         end = end or timezone.now()
         start = start or (timezone.now() - relativedelta(days=6)).replace(
@@ -78,7 +78,7 @@ class EventQuerySet(CTEQuerySet):
         end: Optional[datetime.datetime] = None,
     ):
         """
-            Возврат предзаполненного DAU
+        Возврат предзаполненного DAU
         """
         end = end or timezone.now()
         start = start or timezone.now().date() - relativedelta(days=6)
@@ -89,9 +89,9 @@ class EventQuerySet(CTEQuerySet):
 
     def users_active_today_and_on_week(self, day: datetime.date = None):
         """
-            Возвращаются user_ids  которые были на сайте сегодня
-            и в любой из предыдущих семи дней. Если не был сегодня но был на неделе или
-            был сегодня но на неделе не был - в выборку не попадет
+        Возвращаются user_ids  которые были на сайте сегодня
+        и в любой из предыдущих семи дней. Если не был сегодня но был на неделе или
+        был сегодня но на неделе не был - в выборку не попадет
         """
         day = day or timezone.now().date()
         start = datetime.datetime.combine(
@@ -125,10 +125,16 @@ class Event(models.Model):
     class Meta:
         db_table = 'dau_issue_event_event'
         indexes = [
+            # Кастомный индекс на выражение. Нет поддержки из коробки в 1.11
+            # Необходим для выборок вроде
+            # Event.objects.filter(
+            #     performed_at__date__gte=start,
+            # )
             CustomIndex(
                 f"date(performed_at AT TIME ZONE '{timezone.get_current_timezone_name()}')",
                 name='idx_event_performed_at_date',
             ),
+            # Совмещенный индекс для выборок по дате и юзеру
             Index(fields=['user_id', 'performed_at']),
         ]
 
